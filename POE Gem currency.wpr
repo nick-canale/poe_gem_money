@@ -1,0 +1,35 @@
+#!wing
+#!version=8.0
+##################################################################
+# Wing project file                                              #
+##################################################################
+[project attributes]
+debug.launch-configs = (2,
+                        {'launch-w37tKNt4Q9t8sXnz': ({},
+        {'buildcmd': ('project',
+                      None),
+         'env': ('project',
+                 ['']),
+         'name': 'Python 3',
+         'pyexec': ('project',
+                    ''),
+         'pypath': ('project',
+                    []),
+         'pyrunargs': ('project',
+                       '-u'),
+         'runargs': '',
+         'rundir': ('project',
+                    '')})})
+proj.directory-list = [{'dirloc': loc('.'),
+                        'excludes': (),
+                        'filter': '*',
+                        'include_hidden': False,
+                        'recursive': True,
+                        'watch_for_changes': True}]
+proj.file-type = 'shared'
+proj.launch-config = {loc('POE Gem currency python 3.py'): ('project',
+        ('',
+         'launch-w37tKNt4Q9t8sXnz')),
+                      loc('POE Gem currency.py'): ('project',
+        ('',
+         'launch-w37tKNt4Q9t8sXnz'))}

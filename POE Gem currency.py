@@ -3,6 +3,7 @@ import xlsxwriter
 import os
 import datetime
 import json
+import sqlite3
 
 
 import pandas as pd
@@ -90,28 +91,120 @@ for item in json_data['lines']:
     sheet_rows.append(row)
     
 FullFilePath = os.getcwd()+'\\currency_'+TheDate+'.xlsx'
+
+if os.path.exists(FullFilePath):
+    try:
+        os.remove(FullFilePath)
+    except:
+        print('Cannot delete the file, exiting')
+        exit()
+
 HeaderRow = ['Item', 'Chaos value', 'Gem Level', 'Gem Quality', 'Corrupted', 'Listing Count','Quality Type','Vaal']
 
-if not os.path.exists(FullFilePath):
-    # initialize excel worksheet
-    workbook = xlsxwriter.Workbook(FullFilePath)
-    worksheet = workbook.add_worksheet()
+# initialize excel worksheet
+workbook = xlsxwriter.Workbook(FullFilePath)
+worksheet = workbook.add_worksheet('DataDump')
+
+# write each row from row list to worksheet
+c = 0
+
+#add header for excel
+worksheet.write_row(0,0,HeaderRow)
+
+for r, d in enumerate(sheet_rows):
+    worksheet.write_row(r+1, c, d)
+
+
+#messing around with pandas
+#df = pd.DataFrame(data=sheet_rows, columns=HeaderRow)
+
+#print(df)
+
+
+con = sqlite3.connect('Gems.db')
+
+cur = con.cursor()
+
+try:
+    res = cur.execute('select name from sqlite_master where name = \'Gems\'')
+    if res.fetchone() is not None:
+        cur.execute('drop table Gems')    
+except sqlite3.OperationalError:
+    print('Gems table was not created previously.')
+        
     
-    # write each row from row list to worksheet
-    c = 0
+cur.execute('create table Gems('+','.join(HeaderRow).replace(' ','')+')')
+
+cur.executemany('insert into Gems values(?,?,?,?,?,?,?,?)', sheet_rows)
+con.commit()
+
+
+def GetGemProfit(Workbook, WorksheetName, ProfitQuery, SQLConnection):
+    # Create the sheet to hold the data
+    worksheet = workbook.add_worksheet(WorksheetName)
     
-    #add header for excel
+    # dynamically set up the header based on the columns returned in the query
+    HeaderRow = []
+    res = SQLConnection.execute(ProfitQuery)
+    for colname in res.description:
+        HeaderRow.append(colname[0])
+        
     worksheet.write_row(0,0,HeaderRow)
     
-    for r, d in enumerate(sheet_rows):
-        worksheet.write_row(r+1, c, d)
+    for position, rowdata in enumerate(SQLConnection.execute(ProfitQuery)):
+        worksheet.write_row(position+1,0,rowdata)
+
     
-    # write excel file
-    workbook.close()
-else:
-    print('The excel file was already created for today, skipping.')
+#first, let's look at normal superior gems
+ProfitQuery = """
+SELECT a.Item GemName
+, a.ChaosValue BuyPrice
+, a.GemQuality BuyGemQuality
+, a.ListingCount BuyListings
+, b.GemLevel SellGemLevel
+, b.ChaosValue SellPrice
+, b.ListingCount SellListings
+, b.ChaosValue - a.ChaosValue Profit
+FROM Gems a
+inner join Gems b
+    on a.item = b.item
+    and a.QualityType = ''
+    and b.GemLevel = 20
+    and b.GemQuality = 20
+    and b.Corrupted = ''
+where a.GemLevel = 1
+and a.Corrupted = ''
+and a.QualityType = ''
+and a.GemQuality = 20
+order by Profit desc
+"""
 
+GetGemProfit(workbook, 'NormalGems', ProfitQuery, con)
 
-df = pd.DataFrame(data=sheet_rows, columns=HeaderRow)
+#next, let's look at normal superior gems at level 21
+ProfitQuery = """
+SELECT a.Item GemName
+, a.ChaosValue BuyPrice
+, a.GemQuality BuyGemQuality
+, a.ListingCount BuyListings
+, b.GemLevel SellGemLevel
+, b.ChaosValue SellPrice
+, b.ListingCount SellListings
+, b.ChaosValue - a.ChaosValue Profit
+FROM Gems a
+inner join Gems b
+    on a.item = b.item
+    and a.QualityType = ''
+    and b.GemLevel = 21
+    and b.GemQuality = 20
+where a.GemLevel = 1
+and a.Corrupted = ''
+and a.QualityType = ''
+and a.GemQuality = 20
+order by Profit desc
+"""
 
-print(df)
+GetGemProfit(workbook, 'NormalGems21', ProfitQuery, con)
+    
+# write excel file
+workbook.close()

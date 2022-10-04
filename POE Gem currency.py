@@ -181,7 +181,9 @@ order by Profit desc
 
 GetGemProfit(workbook, 'NormalGems', ProfitQuery, con)
 
-#next, let's look at normal superior gems at level 21
+# next, let's look at normal superior gems at level 21
+# it's a 1/8 chance to get level 21 on corrupt according to this thread 
+# https://www.reddit.com/r/pathofexile/comments/f2qgk3/how_are_the_chances_of_corruption_of_a_gem/
 ProfitQuery = """
 SELECT a.Item GemName
 , a.ChaosValue BuyPrice
@@ -203,8 +205,76 @@ and a.QualityType = ''
 and a.GemQuality = 20
 order by Profit desc
 """
-
 GetGemProfit(workbook, 'NormalGems21', ProfitQuery, con)
+
+
+# alt quality gems
+ProfitQuery = """
+SELECT a.Item GemName
+, a.ChaosValue BuyPrice
+, a.GemQuality BuyGemQuality
+, a.ListingCount BuyListings
+, b.GemLevel SellGemLevel
+, b.ChaosValue SellPrice
+, b.ListingCount SellListings
+, b.ChaosValue - a.ChaosValue Profit
+FROM Gems a
+inner join Gems b
+    on a.item = b.item
+    and a.QualityType = b.QualityType
+    and a.QualityType in('Anomalous','Divergent','Phantasmal')
+    and b.GemLevel = 20
+    and b.GemQuality = 20
+where a.GemLevel <> 20
+and a.Corrupted = ''
+and a.QualityType in('Anomalous','Divergent','Phantasmal')
+order by Profit desc
+"""
+
+GetGemProfit(workbook, 'AltQualityGems', ProfitQuery, con)
+
+# Enhance / Enlighten / Empower
+ProfitQuery = """
+SELECT a.Item GemName
+, a.ChaosValue BuyPrice
+, a.GemQuality BuyGemQuality
+, a.ListingCount BuyListings
+, b.GemLevel SellGemLevel
+, b.ChaosValue SellPrice
+, b.ListingCount SellListings
+, b.ChaosValue - a.ChaosValue Profit
+FROM Gems a
+inner join Gems b
+    on a.item = b.item
+    and a.QualityType in ('Enhance','Enlighten','Empower')
+    and b.GemLevel = 3
+    and b.GemQuality = 20
+    and b.Corrupted = ''
+where a.GemLevel = 1
+and a.Corrupted = ''
+and a.QualityType in('Enhance','Enlighten','Empower')
+union all
+SELECT a.Item GemName
+, a.ChaosValue BuyPrice
+, a.GemQuality BuyGemQuality
+, a.ListingCount BuyListings
+, b.GemLevel SellGemLevel
+, b.ChaosValue SellPrice
+, b.ListingCount SellListings
+, b.ChaosValue - a.ChaosValue Profit
+FROM Gems a
+inner join Gems b
+    on a.item = b.item
+    and a.QualityType in ('Enhance','Enlighten','Empower')
+    and b.GemLevel = 4
+where a.GemLevel = 1
+and a.Corrupted = ''
+and a.QualityType in('Enhance','Enlighten','Empower')
+order by Profit desc
+"""
+
+GetGemProfit(workbook, 'EEEGems', ProfitQuery, con)
+
     
 # write excel file
 workbook.close()

@@ -3,22 +3,15 @@ import os
 import json
 import sqlite3 
 import re
-from psycopg2 import connect
-import config
-from GetGemDataFromPOENinja import GetJsonDataFromPoeNinja
-import CommonFunctions
+from POENinja import GetJsonDataFromPoeNinja
+import CommonFunctions as CF
 
 
 def GetExcelFilePath():
-    return os.getcwd()+f'\\currency_{CommonFunctions.GetTheDate()}.xlsx'
+    return os.getcwd()+f'\\currency_{CF.GetTheDate()}.xlsx'
 
-def GetValueListFromListOfDict(Dict):
-    TheList = []
-    for i in Dict:
-        TheList.append(list(i.values()))
-    return TheList
 
-def GetGemsDict(FullJsonFilePath=CommonFunctions.GetFullJsonFilePath()):
+def GetGemsDict(FullJsonFilePath=CF.GetFullJsonFilePath()):
 
     if not os.path.exists(FullJsonFilePath):
         GetJsonDataFromPoeNinja()
@@ -92,57 +85,6 @@ def GetGemsDict(FullJsonFilePath=CommonFunctions.GetFullJsonFilePath()):
         
     return GemList
 
-def LoadSQLLiteDB(ItemList, ListType):
-    con = sqlite3.connect(f'{ListType}.db')
-
-    cur = con.cursor()
-
-    try:
-        res = cur.execute(f'select name from sqlite_master where name = \'{ListType}\'')
-        if res.fetchone() is not None:
-            cur.execute(f'drop table {ListType}')    
-    except sqlite3.OperationalError:
-        print(f'{ListType} table was not created previously.')
-            
-    cur.execute(f'create table {ListType}('+','.join(list(ItemList[0].keys()))+')')
-
-    # Dynamically build the question mark thing for the insert with the number of variables we're inserting
-    qs = ''
-    for i in range(len(list(ItemList[0].keys()))):
-        qs = qs + '?,'
-    qs = qs[0:len(qs)-1]
-
-    InsertItems = GetValueListFromListOfDict(ItemList)
-
-    cur.executemany(f'insert into {ListType} values({qs})', InsertItems)
-    con.commit()
-
-def LoadToPostgresDB(ItemList, ListType):
-
-    with connect(f'host={config.host} dbname={config.dbname} user={config.username} password={config.password}') as conn:
-
-        # Open a cursor to perform database operations
-        with conn.cursor() as cur:
-
-            try:
-                res = cur.execute(f'select table_name from information_schema.tables where table_name = \'{ListType}\'')
-                if res.fetchone() is not None:
-                    cur.execute(f'drop table {ListType}')    
-            except sqlite3.OperationalError:
-                print(f'{ListType} table was not created previously.')
-                    
-            cur.execute(f'create table {ListType}('+' Varchar(500),'.join(list(ItemList[0].keys()))+' Varchar(500)'+')')
-
-            # Dynamically build the question mark thing for the insert with the number of variables we're inserting
-            qs = ''
-            for i in range(len(list(ItemList[0].keys()))):
-                qs = qs + '%s,'
-            qs = qs[0:len(qs)-1]
-
-            InsertItems = GetValueListFromListOfDict(ItemList)
-
-            cur.executemany(f'insert into {ListType} values({qs})', InsertItems)
-            conn.commit()
 
 def CreateExcelFile(ItemList, FullFilePath=GetExcelFilePath()):
 
@@ -164,13 +106,13 @@ def CreateExcelFile(ItemList, FullFilePath=GetExcelFilePath()):
     #add header for excel
     worksheet.write_row(0,0,HeaderRow)
     
-    InsertItems = GetValueListFromListOfDict(ItemList)
+    InsertItems = CF.GetValueListFromListOfDict(ItemList)
 
     for r, d in enumerate(InsertItems):
         worksheet.write_row(r+1, c, d)
     return workbook
 
-def AddGemProfit(Workbook, WorksheetName, ProfitQuery, DBName,FullFilePath=GetExcelFilePath()):
+def AddGemProfitToExcel(Workbook, WorksheetName, ProfitQuery, DBName,FullFilePath=GetExcelFilePath()):
     # Create the sheet to hold the data
     worksheet = Workbook.add_worksheet(WorksheetName)
     
@@ -214,7 +156,7 @@ def PopulateExcelFile(GemsDict):
     order by Profit desc
     """
 
-    AddGemProfit(Workbook, 'NormalGems', ProfitQuery1, 'Gems')
+    AddGemProfitToExcel(Workbook, 'NormalGems', ProfitQuery1, 'Gems')
 
     # next, let's look at normal superior gems at level 21
     # it's a 1/8 chance to get level 21 on corrupt according to this thread 
@@ -238,7 +180,7 @@ def PopulateExcelFile(GemsDict):
     and a.GemQuality = 20
     order by Profit desc
     """
-    AddGemProfit(Workbook, 'NormalGems21', ProfitQuery2, 'Gems')
+    AddGemProfitToExcel(Workbook, 'NormalGems21', ProfitQuery2, 'Gems')
 
 
     # alt quality gems
@@ -264,7 +206,7 @@ def PopulateExcelFile(GemsDict):
     order by Profit desc
     """
 
-    AddGemProfit(Workbook, 'AltQualityGems', ProfitQuery3, 'Gems')
+    AddGemProfitToExcel(Workbook, 'AltQualityGems', ProfitQuery3, 'Gems')
 
     # Enhance / Enlighten / Empower
     ProfitQuery4 = """
@@ -306,7 +248,7 @@ def PopulateExcelFile(GemsDict):
     order by Profit desc
     """
 
-    AddGemProfit(Workbook, 'EEEGems', ProfitQuery4, 'Gems')
+    AddGemProfitToExcel(Workbook, 'EEEGems', ProfitQuery4, 'Gems')
 
     Workbook.close()
 
@@ -315,8 +257,5 @@ def PopulateExcelFile(GemsDict):
 # Get the gems list from the json file
 GemsDict = GetGemsDict()
 
-# Load the SQLLite DB so we can query against it
-LoadSQLLiteDB(GemsDict, 'Gems')
 
-# Load the Postgres DB so we can query against it
-LoadToPostgresDB(GemsDict, 'Gems')
+

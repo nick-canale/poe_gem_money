@@ -3,7 +3,7 @@ import os
 import json
 import sqlite3 
 import re
-from POENinja import GetJsonDataFromPoeNinja
+from POENinja import GetGemDataFromPoeNinja
 import CommonFunctions as CF
 
 
@@ -14,7 +14,7 @@ def GetExcelFilePath():
 def GetGemsDict(FullJsonFilePath=CF.GetFullJsonFilePath()):
 
     if not os.path.exists(FullJsonFilePath):
-        GetJsonDataFromPoeNinja()
+        GetGemDataFromPoeNinja()
     
     with open(FullJsonFilePath, 'r') as openfile:
         # Reading from json file
@@ -112,22 +112,6 @@ def CreateExcelFile(ItemList, FullFilePath=GetExcelFilePath()):
         worksheet.write_row(r+1, c, d)
     return workbook
 
-def AddGemProfitToExcel(Workbook, WorksheetName, ProfitQuery, DBName,FullFilePath=GetExcelFilePath()):
-    # Create the sheet to hold the data
-    worksheet = Workbook.add_worksheet(WorksheetName)
-    
-    # dynamically set up the header based on the columns returned in the query
-    HeaderRow = []
-    con = sqlite3.connect(f'{DBName}.db')
-    res = con.execute(ProfitQuery)
-    for colname in res.description:
-        HeaderRow.append(colname[0])
-        
-    worksheet.write_row(0,0,HeaderRow)
-    
-    for position, rowdata in enumerate(con.execute(ProfitQuery)):
-        worksheet.write_row(position+1,0,rowdata)
-    return Workbook
 
     
 def PopulateExcelFile(GemsDict):
@@ -253,9 +237,28 @@ def PopulateExcelFile(GemsDict):
     Workbook.close()
 
 
+def AddGemProfitToExcel(Workbook, WorksheetName, ProfitQuery, DBName,FullFilePath=GetExcelFilePath()):
+    # Create the sheet to hold the data
+    worksheet = Workbook.add_worksheet(WorksheetName)
+    
+    # dynamically set up the header based on the columns returned in the query
+    HeaderRow = []
+    con = sqlite3.connect(f'{DBName}.db')
+    res = con.execute(ProfitQuery)
+    for colname in res.description:
+        HeaderRow.append(colname[0])
+        
+    worksheet.write_row(0,0,HeaderRow)
+    
+    for position, rowdata in enumerate(con.execute(ProfitQuery)):
+        worksheet.write_row(position+1,0,rowdata)
+    return Workbook
 
 # Get the gems list from the json file
 GemsDict = GetGemsDict()
 
+CF.LoadSQLLiteDB(GemsDict, 'Gems')
 
+#Populate the excel file
+PopulateExcelFile(GemsDict)
 

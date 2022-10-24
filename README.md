@@ -30,10 +30,11 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
+<!--
   <a href="https://github.com/nick-canale/poe_gem_money">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
-
+-->
 <h3 align="center">POE Gem Moey</h3>
 
   <p align="center">
@@ -122,8 +123,13 @@ Run these commands to install the pre-requisites in python:
   pip install config
   pip install pandas
   ```
-Once you do that, you will need to create a config file with your postgres database credentials. 
-
+Once you do that, you will need to create a config.py file with your postgres database credentials. It should have these 4 variables:
+  ```sh
+host="Host"
+dbname="DBName"
+user="User"
+password="Password"
+  ```
 <!--
 ### Installation
 
@@ -191,7 +197,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the GPLv3 License.
 
 
 

@@ -16,7 +16,7 @@ def GetValueListFromListOfDict(Dict: dict) -> list:
         TheList.append(list(i.values()))
     return TheList
 
-def LoadSQLLiteDB(ItemList, ListType):
+def LoadSQLLiteDB(ItemList:list, ListType:str):
     con = sqlite3.connect(f'{ListType}.db')
 
     cur = con.cursor()

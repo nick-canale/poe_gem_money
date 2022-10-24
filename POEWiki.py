@@ -54,6 +54,15 @@ def GetGemEXPFromPOEWiki():
 
     cur.executemany('insert into GemExp (GemName, level, experience) values(?,?,?)', GemExp)
 
+    # now we need to get rid of the duplicate records due to my hacky way of 
+    # getting the non-normal gems (level < 7, exp > 3m)
+    cur.execute(f'''delete from gemexp where gemid in (
+                    select gemid
+                    from (select *, row_number()over(PARTITION by gemname order by level desc) rownum
+                    from gemexp a) a
+                    where rownum > 1
+                    )''')
+
     con.commit()
 
 if __name__ == '__main__':

@@ -27,13 +27,13 @@
 -->
 
 
-<!-- PROJECT LOGO 
+<!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/nick-canale/poe_gem_money">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
--->
+
 <h3 align="center">POE Gem Moey</h3>
 
   <p align="center">
@@ -55,7 +55,7 @@
 
 
 
-<!-- TABLE OF CONTENTS -->
+<!-- TABLE OF CONTENTS 
 <details>
   <summary>Table of Contents</summary>
   <ol>
@@ -80,7 +80,7 @@
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
-
+-->
 
 
 <!-- ABOUT THE PROJECT 
@@ -112,19 +112,17 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Not sure what you will need to get started yet, this project is still a work in progress :)
-
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* Run these commands to install the pre-requisites for python:
+Run these commands to install the pre-requisites in python:
   ```sh
   pip install requests
   pip install xlsxwriter
-  pip install psycopg2
+  pip install psycopg2-binary
   pip install config
   pip install pandas
   ```
+Once you do that, you will need to create a config file with your postgres database credentials. 
 
 <!--
 ### Installation
@@ -147,7 +145,7 @@ This is an example of how to list things you need to use the software and how to
 
 -->
 
-<!-- USAGE EXAMPLES -->
+<!-- USAGE EXAMPLES 
 ## Usage
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
@@ -156,9 +154,9 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+-->
 
-
-<!-- ROADMAP -->
+<!-- ROADMAP 
 ## Roadmap
 
 - [ ] Feature 1
@@ -169,10 +167,10 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 See the [open issues](https://github.com/nick-canale/poe_gem_money/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+-->
 
 
-
-<!-- CONTRIBUTING -->
+<!-- CONTRIBUTING 
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -188,18 +186,17 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
+-->
 
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
-<!-- CONTACT -->
+<!-- CONTACT 
 ## Contact
 
 Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
@@ -207,10 +204,10 @@ Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_
 Project Link: [https://github.com/nick-canale/poe_gem_money](https://github.com/nick-canale/poe_gem_money)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+-->
 
 
-
-<!-- ACKNOWLEDGMENTS -->
+<!-- ACKNOWLEDGMENTS 
 ## Acknowledgments
 
 * []()
@@ -219,7 +216,7 @@ Project Link: [https://github.com/nick-canale/poe_gem_money](https://github.com/
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
+-->
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
@@ -236,6 +233,7 @@ Project Link: [https://github.com/nick-canale/poe_gem_money](https://github.com/
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: images/screenshot.png
+[postgres-install]: images/kDHdm.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB

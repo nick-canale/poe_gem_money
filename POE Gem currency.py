@@ -1,26 +1,16 @@
-import requests
 import xlsxwriter
 import os
-import datetime
 import json
 import sqlite3 
 import re
-import psycopg
+from psycopg2 import connect
 import config
+from GetGemDataFromPOENinja import GetJsonDataFromPoeNinja
+import CommonFunctions
 
-import pandas as pd
-import numpy as np
-
-
-
-def GetTheDate():
-    return datetime.date.today().strftime('%Y%m%d')
-
-def GetFullJsonFilePath():
-    return os.getcwd()+f'\\json_{GetTheDate()}.txt' 
 
 def GetExcelFilePath():
-    return os.getcwd()+f'\\currency_{GetTheDate()}.xlsx'
+    return os.getcwd()+f'\\currency_{CommonFunctions.GetTheDate()}.xlsx'
 
 def GetValueListFromListOfDict(Dict):
     TheList = []
@@ -28,25 +18,7 @@ def GetValueListFromListOfDict(Dict):
         TheList.append(list(i.values()))
     return TheList
 
-def GetJsonDataFromPoeNinja(League='Kalandra',DataType='SkillGem'):
-    URL = f'https://poe.ninja/api/data/itemoverview?league={League}&type={DataType}'
-
-    TheDate = GetTheDate()
-
-    # check to see if we've pulled the json data today
-    if not os.path.exists(GetFullJsonFilePath()):
-
-        # send get request and save response
-        r = requests.get(url = URL)
-        
-        json_dump = json.dumps(r.json())
-        
-        with open(GetFullJsonFilePath(), 'w') as f:
-            f.write(json_dump)
-    else:
-        print('Already retreived the json for today, skipping.')
-
-def GetGemsDict(FullJsonFilePath=GetFullJsonFilePath()):
+def GetGemsDict(FullJsonFilePath=CommonFunctions.GetFullJsonFilePath()):
 
     if not os.path.exists(FullJsonFilePath):
         GetJsonDataFromPoeNinja()
@@ -147,7 +119,7 @@ def LoadSQLLiteDB(ItemList, ListType):
 
 def LoadToPostgresDB(ItemList, ListType):
 
-    with psycopg.connect(f'host={config.host} dbname={config.dbname} user={config.username} password={config.password}') as conn:
+    with connect(f'host={config.host} dbname={config.dbname} user={config.username} password={config.password}') as conn:
 
         # Open a cursor to perform database operations
         with conn.cursor() as cur:

@@ -28,7 +28,8 @@ def LoadSQLLiteDB(ItemList:list, ListType:str):
     except sqlite3.OperationalError:
         print(f'{ListType} table was not created previously.')
             
-    cur.execute(f'create table {ListType}('+','.join(list(ItemList[0].keys()))+')')
+    Columns = ','.join(list(ItemList[0].keys()))
+    cur.execute(f'create table {ListType}(ID integer primary key autoincrement,{Columns})')
 
     # Dynamically build the question mark thing for the insert with the number of variables we're inserting
     qs = ''
@@ -38,7 +39,7 @@ def LoadSQLLiteDB(ItemList:list, ListType:str):
 
     InsertItems = GetValueListFromListOfDict(ItemList)
 
-    cur.executemany(f'insert into {ListType} values({qs})', InsertItems)
+    cur.executemany(f'insert into {ListType}({Columns}) values({qs})', InsertItems)
     con.commit()
 
 def LoadToPostgresDB(ItemList, ListType):

@@ -132,11 +132,8 @@ def PopulateExcelFile(GemsDict):
     inner join Gems b
         on a.GemName = b.GemName
         and b.GemLevel = 20
-        and b.GemQuality = 20
         and b.IsCorrupted = 0
     where a.GemLevel = 1
-    and a.GemQuality = 20
-    and a.IsCorrupted = 0
     order by Profit desc
     """
 
@@ -165,74 +162,6 @@ def PopulateExcelFile(GemsDict):
     order by Profit desc
     """
     AddGemProfitToExcel(Workbook, 'NormalGems21', ProfitQuery2, 'Gems')
-
-
-    # alt quality gems
-    ProfitQuery3 = """
-    SELECT a.GemName
-    , a.ChaosValue BuyPrice
-    , a.GemQuality BuyGemQuality
-    , a.ListingCount BuyListings
-    , b.GemLevel SellGemLevel
-    , b.ChaosValue SellPrice
-    , b.ListingCount SellListings
-    , b.ChaosValue - a.ChaosValue Profit
-    FROM Gems a
-    inner join Gems b
-        on a.GemName = b.GemName
-        and a.AltQualityName = b.AltQualityName
-        and a.AltQualityName in('Anomalous','Divergent','Phantasmal')
-        and b.GemLevel = 20
-        and b.GemQuality = 20
-    where a.GemLevel <> 20
-    and a.IsCorrupted = False
-    and a.AltQualityName in('Anomalous','Divergent','Phantasmal')
-    order by Profit desc
-    """
-
-    AddGemProfitToExcel(Workbook, 'AltQualityGems', ProfitQuery3, 'Gems')
-
-    # Enhance / Enlighten / Empower
-    ProfitQuery4 = """
-    SELECT a.GemName GemName
-    , a.ChaosValue BuyPrice
-    , a.GemQuality BuyGemQuality
-    , a.ListingCount BuyListings
-    , b.GemLevel SellGemLevel
-    , b.ChaosValue SellPrice
-    , b.ListingCount SellListings
-    , b.ChaosValue - a.ChaosValue Profit
-    FROM Gems a
-    inner join Gems b
-        on a.GemName = b.GemName
-        and a.ExceptionalGem <> ''
-        and b.GemLevel = 3
-        and b.GemQuality = 20
-        and b.IsCorrupted = False
-    where a.GemLevel = 1
-    and a.IsCorrupted = False
-    and a.ExceptionalGem <> ''
-    union all
-    SELECT a.GemName GemName
-    , a.ChaosValue BuyPrice
-    , a.GemQuality BuyGemQuality
-    , a.ListingCount BuyListings
-    , b.GemLevel SellGemLevel
-    , b.ChaosValue SellPrice
-    , b.ListingCount SellListings
-    , b.ChaosValue - a.ChaosValue Profit
-    FROM Gems a
-    inner join Gems b
-        on a.GemName = b.GemName
-        and b.ExceptionalGem <> ''
-        and b.GemLevel = 4
-    where a.GemLevel = 1
-    and a.IsCorrupted = False
-    and a.ExceptionalGem <> ''
-    order by Profit desc
-    """
-
-    AddGemProfitToExcel(Workbook, 'EEEGems', ProfitQuery4, 'Gems')
 
     Workbook.close()
 
